@@ -1,72 +1,72 @@
 package devfordev.display;
 
+import java.awt.Color;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
-
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JOptionPane;
+import javax.swing.JLabel;
 import javax.swing.JTextPane;
-import javax.swing.text.MaskFormatter;
-
-import devfordev.data.MaskTextMAC;
+import devfordev.data.Calculo;
 import devfordev.data.MeuJButton;
 
 @SuppressWarnings("serial")
 public class DisplayCad extends Resolution {
 
-	private MeuJButton adicionar, copiar;
-	private JTextPane macs;
-	private String macText = "", macTemp;
-	private JFormattedTextField mac;
-	private TextField diaTf;
+	private String valorPlanoText = "", valorHoraText = "",descFloat;
+	private float vHora,vPlano, descontoD;
+	private MeuJButton calcularDesc;
+	private JTextPane valorDesconto;
+	private TextField valorHora,valorPlano;
+	private JLabel planoLabel,horaLabel,descLabel;
 	private Ouvinte o = new Ouvinte();
+	private Calculo calc = new Calculo();
 
 	public DisplayCad() {
 //		this.adicionarLb();
 		this.adicionarTf();
 		this.adicionarBt();
+		this.adicionarJl();
 		this.repaint();
 	}
 
 	public void adicionarBt() {
 		// MeuJButton("NOME DO BOTAO",x, y, width, height,"ICONE USADO NO
 		// BOTAO");
-		copiar = new MeuJButton("Calcular", 265, 160, 100, 30);
-		copiar.addActionListener(o);
-		this.add(copiar);
+		calcularDesc = new MeuJButton("Calcular", 125, 90, 80, 30);
+		calcularDesc.addActionListener(o);
+		this.add(calcularDesc);
 	}
 
 	/**
 	 * Metodo utilizado para adicionar JTextFields na tela.
 	 */
 	public void adicionarJl() {
-		
+		planoLabel = new JLabel("Valor do Plano");
+		planoLabel.setBounds(15, 5, 100, 20);
+		planoLabel.setForeground(Color.WHITE);
+		add(planoLabel);
+		horaLabel = new JLabel("Horas Offline");
+		horaLabel.setBounds(125, 5, 100, 20);
+		horaLabel.setForeground(Color.WHITE);
+		add(horaLabel);
+		descLabel = new JLabel("Valor do Desconto");
+		descLabel.setBounds(15, 65, 120, 20);
+		descLabel.setForeground(Color.WHITE);
+		add(descLabel);
 	}
 	public void adicionarTf() {
-		MaskFormatter maskMac;
-		try {
-			maskMac = new MaskFormatter("##.##");
-			mac = new JFormattedTextField(maskMac);
-			mac.setBounds(15, 40, 240, 30);
-			mac.setValue(null);
-			add(mac);
-			diaTf = new TextField();
-			diaTf.setBounds(15, 100, 240, 30);
-			diaTf.setText("");
-			add(diaTf);
-			macs = new JTextPane();
-			macs.setBounds(15, 160, 240, 180);
-			macs.setEditable(false);
-			add(macs);
-
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+			valorPlano = new TextField();
+			valorPlano.setBounds(15, 30, 80, 30);
+			valorPlano.setText(null);
+			add(valorPlano);
+			valorHora = new TextField();
+			valorHora.setBounds(125, 30, 80, 30);
+			valorHora.setText("");
+			add(valorHora);
+			valorDesconto = new JTextPane();
+			valorDesconto.setBounds(15, 90, 80, 30);
+			valorDesconto.setEditable(false);
+			add(valorDesconto);
 	}
 
 	private class Ouvinte implements ActionListener {
@@ -74,23 +74,28 @@ public class DisplayCad extends Resolution {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			if (e.getSource() == adicionar) {
-				macText = mac.getText().toUpperCase();
-				if (macText.replace(" ", "").length() < 17) {
-					JOptionPane.showMessageDialog(macs, "Mac Incompleto!");
-				} else {
-					macText = mac.getText().toUpperCase();
-					macTemp = macs.getText() + macText + "\n";
-					macs.setText(macTemp);
-					mac.setValue(null);
+			if (e.getSource() == calcularDesc) {
+				valorPlanoText = valorPlano.getText();
+				valorHoraText = valorHora.getText();
+				vPlano = calc.strToFloat(valorPlanoText);//String convert to Float
+				vHora = calc.strToFloat(valorHoraText);//String convert to Float
+				descontoD = calc.calcDesc(vPlano, vHora);
+				if(descontoD < 1.0) {
+					descFloat = calc.formatarFloat(descontoD).toString() + " Centavos";
 				}
+				else if(descontoD < 2.0) {
+					descFloat = calc.formatarFloat(descontoD).toString() + " Real";
+				}
+				else {
+					descFloat = calc.formatarFloat(descontoD).toString() + " Reais";
+				}
+				valorDesconto.setText(descFloat);
+				valorPlano.setText(null);
+				valorHora.setText(null);
+				
 
 			}
-			if (e.getSource() == copiar) {
-				macs.selectAll();
-				macs.copy();
-				macs.setText(null);
-			}
+
 		}
 
 	}

@@ -13,8 +13,8 @@ public class Resolution extends JFrame {
 		public Resolution() {
 
 			setLayout(null);
-			setTitle("Cadastro MAC");
-			setSize(380, 400);
+			setTitle("Desconto");
+			setSize(240, 180);
 			setResizable(false);
 			setDefaultCloseOperation(EXIT_ON_CLOSE);
 			setIconImage(new javax.swing.ImageIcon(getClass().getResource("/devfordev/resource/icon.png")).getImage());
